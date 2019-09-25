@@ -140,3 +140,5 @@ alias prune='git remote prune origin'
 alias rc='rails c'
 alias rs='rails s'
 alias rcreds='EDITOR="atom --wait" rails credentials:edit'
+# useful in rails 6 to exclude a bunch of built in routes
+alias routes='rails routes | grep -v rails'
