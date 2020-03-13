@@ -76,7 +76,7 @@ source $ZSH/oh-my-zsh.sh
 eval "$(rbenv init - zsh)"
 
 # manually use old node for now...
-export PATH="/usr/local/opt/node@10/bin:$PATH"
+# export PATH="/usr/local/opt/node@10/bin:$PATH"
 
 # User configuration
 
@@ -126,6 +126,7 @@ alias gcl='git clone'
 alias gco='git checkout'
 alias gcb='git checkout -b'
 alias gd='git diff'
+alias gf='git fetch'
 alias gl='git log'
 alias gpo='git push origin'
 alias gplo='git pull origin'
@@ -142,3 +143,34 @@ alias rs='rails s'
 alias rcreds='EDITOR="atom --wait" rails credentials:edit'
 # useful in rails 6 to exclude a bunch of built in routes
 alias routes='rails routes | grep -v rails'
+
+# NVM Stuff ----------------------------------------------------------------------------------------
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# This part will run `nvm use` whenever a .nvmrc file is detected
+# from: https://github.com/nvm-sh/nvm#zsh
+autoload -U add-zsh-hook
+load-nvmrc() {
+  local node_version="$(nvm version)"
+  local nvmrc_path="$(nvm_find_nvmrc)"
+
+  if [ -n "$nvmrc_path" ]; then
+    local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+
+    if [ "$nvmrc_node_version" = "N/A" ]; then
+      nvm install
+    elif [ "$nvmrc_node_version" != "$node_version" ]; then
+      nvm use
+    fi
+  elif [ "$node_version" != "$(nvm version default)" ]; then
+    echo "Reverting to nvm default version"
+    nvm use default
+  fi
+}
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc
+# --------------------------------------------------------------------------------------------------
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
